@@ -40,7 +40,7 @@ cd "$WORK_DIR"
 # Download and install Gurobi
 GUROBI_VERSION="11.0.0"
 GUROBI_SHORT="11.0"
-GUROBI_DIR="gurobi${GUROBI_SHORT//./}"  # e.g., gurobi110
+GUROBI_DIR="gurobi${GUROBI_VERSION//./}"  # e.g., gurobi1100
 
 echo "Downloading Gurobi ${GUROBI_VERSION}..."
 wget -q "https://packages.gurobi.com/${GUROBI_SHORT}/gurobi${GUROBI_VERSION}_linux64.tar.gz"
