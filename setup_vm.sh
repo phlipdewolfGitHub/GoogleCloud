@@ -111,13 +111,19 @@ set -e
 # Activate environment
 source "$HOME/gurobi_workspace/activate.sh"
 
-# Check for license environment variables
-if [ -z "$WLSACCESSID" ] || [ -z "$WLSSECRET" ] || [ -z "$LICENSEID" ]; then
+# Create gurobi.lic file if WLS credentials are provided
+if [ -n "$WLSACCESSID" ] && [ -n "$WLSSECRET" ] && [ -n "$LICENSEID" ]; then
+    echo "Creating Gurobi WLS license file..."
+    cat > "$HOME/gurobi.lic" << LICEOF
+WLSACCESSID=$WLSACCESSID
+WLSSECRET=$WLSSECRET
+LICENSEID=$LICENSEID
+LICEOF
+    export GRB_LICENSE_FILE="$HOME/gurobi.lic"
+    echo "✓ Gurobi WLS license configured"
+else
     echo "WARNING: Gurobi WLS license variables not set!"
-    echo "If you're using WLS license, export these variables:"
-    echo "  export WLSACCESSID=\"your-access-id\""
-    echo "  export WLSSECRET=\"your-secret\""
-    echo "  export LICENSEID=\"your-license-id\""
+    echo "The restricted trial license will be used (limited model size)"
     echo ""
 fi
 
