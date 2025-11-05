@@ -48,6 +48,30 @@ class GurobiCloudSolver:
         print(f"Zone: {self.zone}")
         print("="*70)
 
+        # First, ensure default SSH firewall rule exists
+        print("Checking firewall rules...")
+        firewall_check = subprocess.run(
+            ["gcloud", "compute", "firewall-rules", "describe", "default-allow-ssh",
+             "--project", self.project_id],
+            capture_output=True,
+            text=True
+        )
+
+        if firewall_check.returncode != 0:
+            # Create SSH firewall rule
+            print("Creating SSH firewall rule...")
+            subprocess.run(
+                ["gcloud", "compute", "firewall-rules", "create", "default-allow-ssh",
+                 "--project", self.project_id,
+                 "--allow", "tcp:22",
+                 "--source-ranges", "0.0.0.0/0",
+                 "--description", "Allow SSH from anywhere"],
+                capture_output=True
+            )
+            print("✓ Firewall rule created")
+        else:
+            print("✓ Firewall rule exists")
+
         create_cmd = [
             "gcloud", "compute", "instances", "create", self.instance_name,
             "--project", self.project_id,
@@ -73,7 +97,9 @@ class GurobiCloudSolver:
     def wait_for_vm_ready(self, max_wait=300):
         """Wait for VM to be ready for SSH connections"""
         print("Waiting for VM to be ready for SSH...")
+        print("(This typically takes 1-3 minutes)")
         start_time = time.time()
+        last_error = None
 
         while time.time() - start_time < max_wait:
             try:
@@ -83,24 +109,30 @@ class GurobiCloudSolver:
                     "--project", self.project_id,
                     "--zone", self.zone,
                     "--command", "echo ready",
-                    "--", "-o", "StrictHostKeyChecking=no",
-                    "-o", "ConnectTimeout=10"
+                    "--ssh-flag=-o", "--ssh-flag=StrictHostKeyChecking=no",
+                    "--ssh-flag=-o", "--ssh-flag=ConnectTimeout=10"
                 ]
-                result = subprocess.run(test_cmd, capture_output=True, text=True, timeout=15)
+                result = subprocess.run(test_cmd, capture_output=True, text=True, timeout=20)
 
                 if result.returncode == 0 and "ready" in result.stdout:
                     print("✓ VM is ready")
                     print()
                     return True
+                else:
+                    last_error = result.stderr
             except subprocess.TimeoutExpired:
-                pass
+                last_error = "SSH connection timed out"
             except Exception as e:
-                pass
+                last_error = str(e)
 
-            print("  Still waiting...", end='\r')
+            elapsed = int(time.time() - start_time)
+            print(f"  Still waiting... ({elapsed}s elapsed)", end='\r')
             time.sleep(10)
 
+        print()
         print("✗ VM did not become ready in time")
+        if last_error:
+            print(f"Last error: {last_error[:200]}")
         return False
 
     def setup_gurobi_on_vm(self):
