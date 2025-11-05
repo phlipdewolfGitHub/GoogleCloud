@@ -1,0 +1,13 @@
+# Python dependencies for running Gurobi optimization on Google Cloud
+
+# Gurobi optimizer
+# Note: gurobipy is typically installed from the Gurobi distribution
+# See setup_vm.sh for installation instructions
+gurobipy>=11.0.0
+
+# Google Cloud SDK for Python (for automated workflow)
+google-cloud-compute>=1.14.0
+
+# Optional: Data processing
+numpy>=1.24.0
+pandas>=2.0.0

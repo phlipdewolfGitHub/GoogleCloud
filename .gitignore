@@ -1,0 +1,41 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+
+# Gurobi files
+*.sol
+*.mps
+*.lp
+*.log
+*.ilp
+*.rlp
+*.ord
+
+# Results
+results/
+output/
+
+# Google Cloud credentials
+*.json
+*credentials*
+.gcloud/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment variables
+.env
+.env.local
