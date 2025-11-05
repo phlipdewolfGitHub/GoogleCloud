@@ -72,14 +72,11 @@ echo "Creating Python virtual environment..."
 python3 -m venv "$WORK_DIR/venv"
 source "$WORK_DIR/venv/bin/activate"
 
-# Install gurobipy
+# Install gurobipy and other packages
 echo "Installing Gurobi Python package..."
-cd "$GUROBI_HOME"
-python3 setup.py install
-
-# Install other Python packages
-echo "Installing additional Python packages..."
 pip install --quiet --upgrade pip
+pip install --quiet gurobipy
+echo "Installing additional Python packages..."
 pip install --quiet numpy pandas
 
 # Create convenience script to activate environment
