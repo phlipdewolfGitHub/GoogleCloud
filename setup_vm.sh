@@ -121,6 +121,10 @@ LICENSEID=$LICENSEID
 LICEOF
     export GRB_LICENSE_FILE="$HOME/gurobi.lic"
     echo "✓ Gurobi WLS license configured"
+    echo "Debug: License file created at $HOME/gurobi.lic"
+    echo "Debug: LICENSEID = $LICENSEID"
+    echo "Debug: WLSACCESSID length = ${#WLSACCESSID}"
+    echo "Debug: WLSSECRET length = ${#WLSSECRET}"
 else
     echo "WARNING: Gurobi WLS license variables not set!"
     echo "The restricted trial license will be used (limited model size)"
